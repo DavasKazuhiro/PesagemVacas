@@ -14,11 +14,13 @@ class Pesagem(db.Model):
     # Relacionamento com a tabela Vaca
     vaca = db.relationship('Vaca', backref='pesagens', lazy=True)
 
+    @staticmethod
     def save_pesagem(data_hora, valor, id_vaca):
         pesagem = Pesagem(data_hora=data_hora, valor=valor, id_vaca=id_vaca)
         db.session.add(pesagem)
         db.session.commit()
 
+    @staticmethod
     def get_pesagem():
         pesagens = Pesagem.query.join(Vaca, Vaca.id_vaca == Pesagem.id_vaca)\
             .add_columns(Vaca.id_vaca, Vaca.nome, Pesagem.data_hora, Pesagem.valor).all()

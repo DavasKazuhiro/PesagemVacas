@@ -1,40 +1,36 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        {% block title %}
-        <meta charset="UTF-8">
-        <title>Pesagens</title>
-        {% endblock %}
-    </head>
-    <body>
-        <div>
-            <ul>
-            {% if ids_vacas|length> 0 %}
-                <table id="view_users" class="table table-striped table-bordered" style="width:100%">
-                    <p>Pesagens:</p>
-                    <thead>
+<head>
+    <meta charset="UTF-8">
+    <title>Pesagens</title>
+</head>
+<body>
+    <div>
+        {% if pesagens %}
+            <h2>Pesagens:</h2>
+            <table id="view_users" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID da Vaca</th>
+                        <th>Nome</th>
+                        <th>Data e Hora</th>
+                        <th>Valor da Pesagem (kg)</th>                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pesagens %}
                         <tr>
-                            <th>ID da Vaca</th>
-                            <th>Nome</th>
-                            <th>Data e Hora</th>
-                            <th>Valor da Pesagem (kg)</th>                        
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for i in range(pesagens|length) %}
-                        <tr>
-                            {% for key, value in pesagens[i].items() %}
-                                <td>{{ value }}</td>
-                            {% endfor %}
-                            <td>{{ ids_vacas[i] }}</td>
+                            <td>{{ p.id_vaca }}</td>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.data_hora}}</td>
+                            <td>{{ '%.2f' % p.valor }} kg</td>
                         </tr>
                     {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>Ainda não há pesagens registradas!<p>
-            {% endif %}
-            </ul>
-        </div>
-        
-    </body>
+                </tbody>
+            </table>
+        {% else %}
+            <p>Ainda não há pesagens registradas!</p>
+        {% endif %}
+    </div>
+</body>
 </html>
