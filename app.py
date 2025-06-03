@@ -1,15 +1,19 @@
-from flask import Flask, render_template, request,redirect, url_for,jsonify
+from flask import Flask, Blueprint, render_template, request,redirect, url_for,jsonify
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
+from controllers.app_controller import create_app
+from utils.create_db import create_db
 import json
+from models.db import db, instance
+from controllers.pesagem_controller import pesagem_, Pesagem
+
+atuadores_values= 1
+
+app = Flask(__name__, template_folder="./views/", static_folder="./static/")
 
 ids_vacas = []
 pesagens = []
 data_horas = []
-
-atuadores_values= 1
-
-app= Flask(__name__)
 
 app.config['MQTT_BROKER_URL'] = 'mqtt-dashboard.com'
 app.config['MQTT_BROKER_PORT'] = 1883
@@ -24,8 +28,20 @@ mqtt_client.init_app(app)
 topic_subscribe1 = "exp.criativas/espparapc"
 topic_subscribe2 = "exp.criativas/pcparaesp"
 
+app.register_blueprint(pesagem_, url_prefix='/')
+    
+app.config['TESTING'] = False
+app.config['SECRET_KEY'] = 'generated-secrete-key'
+app.config['SQLALCHEMY_DATABASE_URI'] = instance
+
+db.init_app(app)
 
 @app.route('/')
+def index():
+    return render_template("home.html")
+
+    
+@app.route('/tempo_real')
 def tempo_real():
     global ids_vacas, pesagens, data_horas
     return render_template("tempo_real.html", ids_vacas = ids_vacas, pesagens = pesagens, data_horas = data_horas)
@@ -78,13 +94,23 @@ def handle_disconnect(client, userdata, rc):
 def handle_mqtt_message(client, userdata, message):
     global ids_vacas, pesagens, data_horas
     js = json.loads(message.payload.decode())
+    id = None
+    valor = None
+    data_hora = None
     for key, value in js.items():
         if key == "id_vaca":
-            ids_vacas.append(value)
+            id = value
         elif key == "pesagem":
-            pesagens.append(value)
+            valor = value
         elif key == "data_hora":
-            data_horas.append(value)
+            data_hora = value
+    if id and valor and data_hora:
+        ids_vacas.append(id)
+        pesagens.append(valor)
+        data_horas.append(data_hora)
+        with app.app_context():
+            Pesagem.save_pesagem(data_hora, valor, id)
 
+        
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080, debug=True) 
+    app.run(host='0.0.0.0', port=8080, debug=False, use_reloader=False)

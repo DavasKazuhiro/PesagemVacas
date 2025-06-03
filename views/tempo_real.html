@@ -1,0 +1,60 @@
+<html>
+    <head>
+        {% block title %}
+        <meta charset="UTF-8">
+        <title>Tempo Real</title>
+        <meta http-equiv="refresh" content="1">
+        {% endblock %}
+    </head>
+    <body>
+        <div>
+            <ul>
+            {% if pesagens|length> 0 %}
+                <table id="view_users" class="table table-striped table-bordered" style="width:100%">
+                    <p>Pesagens:</p>
+                    <thead>
+                        <tr>
+                        <th>ID da Vaca</th>
+                        <th>Valor da Pesagem (kg)</th>
+                        <th>Data e Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in range(ids_vacas|length) %}
+                        <tr>
+                            <td>{{ ids_vacas[i] }}</td>
+                            <td>{{ pesagens[i] }}</td>
+                            <td>{{ data_horas[i] }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Ainda não há sensores registrados!<p>
+            {% endif %}
+            </ul>
+        </div>
+
+        <div>
+            <form action="{{ url_for('publish_abrir') }}" method="post">
+                <input type="hidden" name="abrir" value="entrada">
+                <button type="submit">Abrir Entrada</button>
+            </form>
+            <form action="{{ url_for('publish_fechar') }}" method="post">
+                <input type="hidden" name="fechar" value="entrada">
+                <button type="submit">Fechar Entrada</button>
+            </form>
+        </div>
+        <div>
+            <form action="{{ url_for('publish_abrir') }}" method="post">
+                <input type="hidden" name="abrir" value="saida">
+                <button type="submit">Abrir Saída</button>
+            </form>
+            <form action="{{ url_for('publish_fechar') }}" method="post">
+                <input type="hidden" name="fechar" value="saida">
+                <button type="submit">Fechar Saída</button>
+            </form>
+        </div>
+        
+    </body>
+</html>
