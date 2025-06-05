@@ -1,4 +1,16 @@
-db.py
-.venv
-**/__pycache__/
+# Ignorar cache do Python
+__pycache__/
 *.py[cod]
+*$py.class
+
+# Ignorar ambiente virtual
+venv/
+.env/
+
+# Ignorar configurações de IDEs
+.vscode/
+.idea/
+
+# Ignorar arquivos do sistema
+.DS_Store
+Thumbs.db
