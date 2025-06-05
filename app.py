@@ -111,6 +111,17 @@ def handle_mqtt_message(client, userdata, message):
         with app.app_context():
             Pesagem.save_pesagem(data_hora, valor, id)
 
+@app.route('/pesagem_vacas/enviar_', methods=['GET'])
+def send_info():
+    # Pode pegar parâmetros da URL, se quiser
+    nome = request.args.get('nome', 'Usuário')
+
+    resposta = {
+        "mensagem": f"Olá, {nome}! Esta é a resposta do Flask via GET."
+    }
+    return jsonify(resposta)
+
         
 if __name__ == "__main__":
+    create_db(app)
     app.run(host='0.0.0.0', port=8080, debug=False, use_reloader=False)

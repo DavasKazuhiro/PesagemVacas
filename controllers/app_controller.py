@@ -2,7 +2,6 @@
 from flask import Flask, render_template, request
 from models.db import db, instance
 from controllers.pesagem_controller import pesagem_
-# Oi
 
 
 def create_app():
