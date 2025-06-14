@@ -1,10 +1,9 @@
 from flask import Flask, Blueprint, render_template, request,redirect, url_for,jsonify
 from flask_mqtt import Mqtt
-from flask_socketio import SocketIO
-from utils.create_db import create_db
 import json
 from models.db import db, instance
 from controllers.pesagem_controller import pesagem_, Pesagem
+from datetime import datetime
 
 def create_app():
     app = Flask(__name__, template_folder="../views/", static_folder="../static/")
@@ -96,20 +95,20 @@ def create_app():
         js = json.loads(message.payload.decode())
         id = None
         valor = None
-        data_hora = None
+        data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         for key, value in js.items():
             if key == "id_vaca":
-                id = value
+                rfid = value
             elif key == "pesagem":
                 valor = value
-            elif key == "data_hora":
-                data_hora = value
-        if id and valor and data_hora:
-            app.ids_vacas.append(id)
+
+        if rfid and valor:
+            app.ids_vacas.append(rfid)
             app.pesagens.append(valor)
             app.data_horas.append(data_hora)
             with app.app_context():
-                Pesagem.save_pesagem(data_hora, valor, id)
+                Pesagem.save_pesagem(data_hora, valor, rfid)
 
     
     return app
