@@ -4,6 +4,8 @@ import json
 from models.db import db, instance
 from controllers.pesagem_controller import pesagem_, Pesagem
 from datetime import datetime
+from models.iot.alerta_animal import Alerta
+from models.iot.vacas import Vaca
 
 def create_app():
     app = Flask(__name__, template_folder="../views/", static_folder="../static/")
@@ -38,12 +40,13 @@ def create_app():
 
     @app.route('/')
     def index():
-        return render_template("home.html")
+        alertas = Alerta.get_alertas()
+        return render_template("tempo_real.html", ids_vacas = app.ids_vacas, pesagens = app.pesagens, data_horas = app.data_horas, alertas = alertas)
 
     @app.route('/tempo_real')
     def tempo_real():
-
-        return render_template("tempo_real.html", ids_vacas = app.ids_vacas, pesagens = app.pesagens, data_horas = app.data_horas)
+        alertas = Alerta.get_alertas()
+        return render_template("tempo_real.html", ids_vacas = app.ids_vacas, pesagens = app.pesagens, data_horas = app.data_horas, alertas = alertas)
     
     @app.route('/publish_message', methods=['GET','POST'])
     def publish_message():
@@ -109,6 +112,18 @@ def create_app():
             app.data_horas.append(data_hora)
             with app.app_context():
                 Pesagem.save_pesagem(data_hora, valor, rfid)
+                
+                vaca = Vaca.query.filter_by(rfid=rfid).first()
+                if vaca:
+                    nome_vaca = vaca.nome if vaca.nome else f"Vaca {vaca.id_vaca}"
+                    Alerta.save_alerta(vaca.id_vaca, tipo_alerta=f"Pesagem realizada: {nome_vaca} - {valor}kg")
+                    
+                    if valor < 400:  # Peso muito baixo
+                        Alerta.save_alerta(vaca.id_vaca, tipo_alerta=f"⚠️ ATENÇÃO: {nome_vaca} - Peso muito baixo ({valor}kg)")
+                    elif valor > 800:  # Peso muito alto
+                        Alerta.save_alerta(vaca.id_vaca, tipo_alerta=f"⚠️ ATENÇÃO: {nome_vaca} - Peso muito alto ({valor}kg)")
+                else:
+                    Alerta.save_alerta(1, tipo_alerta=f"Pesagem de vaca não identificada - RFID: {rfid} - Peso: {valor}kg")
 
     
     return app

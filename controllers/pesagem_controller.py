@@ -59,7 +59,7 @@ def get_alertas():
             'id_alerta': a.id_alerta,
             'id_vaca': a.id_vaca,
             'data_hora': a.data_hora.strftime('%Y-%m-%d %H:%M:%S') if a.data_hora else None,
-            'descricao': a.descricao
+            'tipo_alerta': a.tipo_alerta
         }
         for a in alertas
     ]
@@ -79,6 +79,23 @@ def get_usuarios():
         for u in usuarios
     ]
     return jsonify(usuarios_data)
+
+@pesagem_.route('/api/alertas', methods=['POST'])
+def create_alerta():
+    data = request.get_json()
+    id_vaca   = data.get('id_vaca')
+    tipo_alerta = data.get('tipo_alerta')
+
+    if not (id_vaca and tipo_alerta):
+        return jsonify({'error': 'Campos id_vaca e tipo_alerta são obrigatórios.'}), 400
+
+    alerta = Alerta.save_alerta(id_vaca=id_vaca, tipo_alerta=tipo_alerta)
+    return jsonify({
+        'id_alerta': alerta.id_alerta,
+        'id_vaca'  : alerta.id_vaca,
+        'data_hora': alerta.data_hora.strftime('%Y-%m-%d %H:%M:%S'),
+        'tipo_alerta': alerta.tipo_alerta
+    }), 201
 
 
 

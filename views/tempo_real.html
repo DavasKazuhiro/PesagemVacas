@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+
 <html>
     <head>
         {% block title %}
@@ -35,6 +38,32 @@
             </ul>
         </div>
 
+        <div style="margin-top: 30px;">
+            <h3>🚨 Alertas Recentes</h3>
+            {% if alertas|length > 0 %}
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID Vaca</th>
+                            <th>Tipo de Alerta</th>
+                            <th>Data e Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for alerta in alertas[-5:] %}  <!-- trazer os 5 mais recentes -->
+                        <tr style="background-color: #ffe6e6;">
+                            <td>{{ alerta.id_vaca }}</td>
+                            <td>{{ alerta.tipo_alerta }}</td>
+                            <td>{{ alerta.data_hora.strftime('%Y-%m-%d %H:%M:%S') if alerta.data_hora else 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Nenhum alerta registrado ainda.</p>
+            {% endif %}
+        </div>
+
         <div>
             <form action="{{ url_for('publish_abrir') }}" method="post">
                 <input type="hidden" name="abrir" value="entrada">
@@ -58,3 +87,5 @@
         
     </body>
 </html>
+
+{% endblock %}

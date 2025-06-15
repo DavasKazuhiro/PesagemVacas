@@ -13,5 +13,16 @@ class Alerta(db.Model):
     vaca = db.relationship('Vaca', backref='alerta', lazy=True)
 
     @staticmethod
+    def save_alerta(id_vaca: int, tipo_alerta: str, data_hora: datetime = None):
+        alerta = Alerta(
+            id_vaca  = id_vaca,
+            tipo_alerta= tipo_alerta,
+            data_hora= data_hora or datetime.utcnow()
+        )
+        db.session.add(alerta)
+        db.session.commit()
+        return alerta
+
+    @staticmethod
     def get_alertas():
         return Alerta.query.all()
