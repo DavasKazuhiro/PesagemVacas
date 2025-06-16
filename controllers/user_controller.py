@@ -15,6 +15,7 @@ def get_usuarios():
             'nivel_usuario': u.nivel_usuario,
             'nome': u.nome,
             'email': u.email,
+            'senha': u.senha,
             'criado_em': u.criado_em.strftime('%Y-%m-%d %H:%M:%S') if u.criado_em else None
         }
         for u in usuarios
