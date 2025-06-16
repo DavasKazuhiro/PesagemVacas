@@ -12,7 +12,3 @@ def get_pesagens():
         "data_hora": p.data_hora
     } for p in pesagens]
     return jsonify(result)
-
-
-
-

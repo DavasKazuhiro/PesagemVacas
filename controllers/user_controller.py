@@ -20,7 +20,22 @@ def get_usuarios():
     ]
     return jsonify(usuarios_data)
 
-@user_.route('/api/usuarios/delete', methods=['POST'])
+@user_.route('/api/add_user', methods=['POST'])
+def add_usuario():
+    data = request.get_json()
+    nome = data.get('nome')
+    email = data.get('email')
+    nivel_usuario = data.get('nivel_usuario')
+
+    if not (nome and email and nivel_usuario):
+        return jsonify({'error': 'Nome, email e nível de usuário são obrigatórios.'}), 400
+
+    usuario = Usuario(nome=nome, email=email, nivel_usuario=nivel_usuario)
+    db.session.add(usuario)
+    db.session.commit()
+    return jsonify({'message': 'Usuário adicionado com sucesso.'}), 201
+
+@user_.route('/api/delete_user', methods=['POST'])
 def delete_usuario():
     data = request.get_json()
     id_usuario = data.get('id_usuario')
