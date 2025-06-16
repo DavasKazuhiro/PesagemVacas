@@ -18,7 +18,7 @@ def get_vacas():
     ]
     return jsonify(vacas_data)
 
-@vaca_.route('/api/add_vacas', methods=['POST'])
+@vaca_.route('/api/add_vaca', methods=['POST'])
 def add_vaca():
     data = request.get_json()
     rfid = data.get('rfid')
@@ -34,16 +34,16 @@ def add_vaca():
 @vaca_.route('/api/delete_vaca', methods=['POST'])
 def delete_vaca():
     data = request.get_json()
-    nome = data.get('nome')
+    id_vaca = data.get('id_vaca')
 
-    if not nome:
-        return jsonify({'error': 'Name is required'}), 400
+    if not id_vaca:
+        return jsonify({'error': 'ID é obrigatório'}), 400
 
-    vaca = Vaca.query.filter_by(nome=nome).first()
+    vaca = Vaca.query.filter_by(id_vaca=id_vaca).first()
     if vaca:
         from models.db import db
         db.session.delete(vaca)
         db.session.commit()
-        return jsonify({'message': f'Vaca "{nome}" deleted successfully'}), 200
+        return jsonify({'message': f'Vaca "{vaca.nome}" removida com sucesso'}), 200
     else:
-        return jsonify({'error': 'Cow not found'}), 404
+        return jsonify({'error': 'Vaca não encontrada'}), 404
