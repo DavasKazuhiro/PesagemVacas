@@ -6,8 +6,6 @@ from models.iot.medida_animal import MedidaAnimal
 from models.iot.alerta_animal import Alerta
 from models.iot.usuario import Usuario
 
-
-
 pesagem_ = Blueprint("pesagem_", __name__ , template_folder="views")
 
 @pesagem_.route('/api/pesagens', methods=['GET'])
