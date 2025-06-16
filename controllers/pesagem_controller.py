@@ -99,4 +99,20 @@ def create_alerta():
 
 
 
+@pesagem_.route('/api/vacas/delete', methods=['POST'])
+def delete_vaca():
+    data = request.get_json()
+    nome = data.get('nome')
+
+    if not nome:
+        return jsonify({'error': 'Name is required'}), 400
+
+    vaca = Vaca.query.filter_by(nome=nome).first()
+    if vaca:
+        from models.db import db
+        db.session.delete(vaca)
+        db.session.commit()
+        return jsonify({'message': f'Vaca "{nome}" deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Cow not found'}), 404
 
