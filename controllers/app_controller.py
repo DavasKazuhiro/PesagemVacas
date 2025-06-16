@@ -3,8 +3,12 @@ from flask_mqtt import Mqtt
 import json
 from models.db import db, instance
 
+# Blueprints
 from controllers.pesagem_controller import pesagem_, Pesagem
 from controllers.vaca_controller import vaca_, Vaca
+from controllers.medida_controller import medida_
+from controllers.alerta_controller import alerta_
+from controllers.user_controller import user_
 
 from datetime import datetime
 from models.iot.alerta_animal import Alerta
@@ -16,6 +20,9 @@ def create_app():
     # BLUEPRINTS
     app.register_blueprint(pesagem_, url_prefix='/')
     app.register_blueprint(vaca_, url_prefix='/')
+    app.register_blueprint(medida_, url_prefix='/')
+    app.register_blueprint(alerta_, url_prefix='/')
+    app.register_blueprint(user_, url_prefix='/')
 
     # VARIÁVEIS GLOBAIS
     topic_subscribe1 = "exp.criativas/espparapc"

@@ -1,9 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from models.iot.pesagens import Pesagem
-from models.iot.vacas import Vaca
-from models.iot.medida_animal import MedidaAnimal
-from models.iot.alerta_animal import Alerta
-from models.iot.usuario import Usuario
 
 pesagem_ = Blueprint("pesagem_", __name__ , template_folder="views")
 
@@ -18,69 +14,5 @@ def get_pesagens():
     return jsonify(result)
 
 
-
-@pesagem_.route('/api/medidas', methods=['GET'])
-def get_medidas():
-    from models.iot.medida_animal import MedidaAnimal
-    medidas = MedidaAnimal.query.all()
-    medidas_data = [
-        {
-            'id_medida': m.id_medida,
-            'id_vaca': m.id_vaca,
-            'data_hora': m.data_hora.strftime('%Y-%m-%d %H:%M:%S') if m.data_hora else None,
-            'altura_cm': m.altura_cm,
-            'circ_peito_cm': m.circ_peito_cm
-        }
-        for m in medidas
-    ]
-    return jsonify(medidas_data)
-
-@pesagem_.route('/api/alertas', methods=['GET'])
-def get_alertas():
-    from models.iot.alerta_animal import Alerta
-    alertas = Alerta.query.all()
-    alertas_data = [
-        {
-            'id_alerta': a.id_alerta,
-            'id_vaca': a.id_vaca,
-            'data_hora': a.data_hora.strftime('%Y-%m-%d %H:%M:%S') if a.data_hora else None,
-            'tipo_alerta': a.tipo_alerta
-        }
-        for a in alertas
-    ]
-    return jsonify(alertas_data)
-
-@pesagem_.route('/api/usuarios', methods=['GET'])
-def get_usuarios():
-    from models.iot.usuario import Usuario
-    usuarios = Usuario.query.all()
-    usuarios_data = [
-        {
-            'id_usuario': u.id_usuario,
-            'nivel_usuario': u.nivel_usuario,
-            'nome': u.nome,
-            'email': u.email,
-            'criado_em': u.criado_em.strftime('%Y-%m-%d %H:%M:%S') if u.criado_em else None
-        }
-        for u in usuarios
-    ]
-    return jsonify(usuarios_data)
-
-@pesagem_.route('/api/alertas', methods=['POST'])
-def create_alerta():
-    data = request.get_json()
-    id_vaca   = data.get('id_vaca')
-    tipo_alerta = data.get('tipo_alerta')
-
-    if not (id_vaca and tipo_alerta):
-        return jsonify({'error': 'Campos id_vaca e tipo_alerta são obrigatórios.'}), 400
-
-    alerta = Alerta.save_alerta(id_vaca=id_vaca, tipo_alerta=tipo_alerta)
-    return jsonify({
-        'id_alerta': alerta.id_alerta,
-        'id_vaca'  : alerta.id_vaca,
-        'data_hora': alerta.data_hora.strftime('%Y-%m-%d %H:%M:%S'),
-        'tipo_alerta': alerta.tipo_alerta
-    }), 201
 
 
