@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from models.iot.vacas import Vaca
+from models.db import db
 
 vaca_ = Blueprint("vaca_", __name__, template_folder="views")
 
@@ -17,7 +18,20 @@ def get_vacas():
     ]
     return jsonify(vacas_data)
 
-@vaca_.route('/api/vacas/delete', methods=['POST'])
+@vaca_.route('/api/add_vacas', methods=['POST'])
+def add_vaca():
+    data = request.get_json()
+    rfid = data.get('rfid')
+    data_nascimento = data.get('data_nascimento')
+    nome = data.get('nome')
+    if not (rfid and data_nascimento and nome):
+        return jsonify({'error': 'RFID, data de nascimento e nome são obrigatórios.'}), 400
+    vaca = Vaca(nome=nome, data_nascimento=data_nascimento, rfid=rfid)
+    db.session.add(vaca)
+    db.session.commit()
+    return jsonify({'message': 'Vaca adicionada com sucesso.'}), 201
+
+@vaca_.route('/api/delete_vaca', methods=['POST'])
 def delete_vaca():
     data = request.get_json()
     nome = data.get('nome')
