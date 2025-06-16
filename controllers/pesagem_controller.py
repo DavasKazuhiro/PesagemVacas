@@ -1,4 +1,3 @@
-#sensors_controller.py
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from models.iot.pesagens import Pesagem
 from models.iot.vacas import Vaca
@@ -18,19 +17,7 @@ def get_pesagens():
     } for p in pesagens]
     return jsonify(result)
 
-@pesagem_.route('/api/vacas', methods=['GET'])
-def get_vacas():
-    vacas = Vaca.query.all()
-    vacas_data = [
-        {
-            'id_vaca': v.id_vaca,
-            'rfid': v.rfid,
-            'data_nascimento': v.data_nascimento.strftime('%Y-%m-%d') if v.data_nascimento else None,
-            'nome': v.nome
-        }
-        for v in vacas
-    ]
-    return jsonify(vacas_data)
+
 
 @pesagem_.route('/api/medidas', methods=['GET'])
 def get_medidas():
@@ -41,8 +28,8 @@ def get_medidas():
             'id_medida': m.id_medida,
             'id_vaca': m.id_vaca,
             'data_hora': m.data_hora.strftime('%Y-%m-%d %H:%M:%S') if m.data_hora else None,
-            'tipo': m.tipo,
-            'valor': m.valor
+            'altura_cm': m.altura_cm,
+            'circ_peito_cm': m.circ_peito_cm
         }
         for m in medidas
     ]
@@ -72,7 +59,8 @@ def get_usuarios():
             'id_usuario': u.id_usuario,
             'nivel_usuario': u.nivel_usuario,
             'nome': u.nome,
-            'data_criacao': u.data_criacao.strftime('%Y-%m-%d %H:%M:%S') if u.data_criacao else None
+            'email': u.email,
+            'criado_em': u.criado_em.strftime('%Y-%m-%d %H:%M:%S') if u.criado_em else None
         }
         for u in usuarios
     ]
@@ -95,22 +83,4 @@ def create_alerta():
         'tipo_alerta': alerta.tipo_alerta
     }), 201
 
-
-
-@pesagem_.route('/api/vacas/delete', methods=['POST'])
-def delete_vaca():
-    data = request.get_json()
-    nome = data.get('nome')
-
-    if not nome:
-        return jsonify({'error': 'Name is required'}), 400
-
-    vaca = Vaca.query.filter_by(nome=nome).first()
-    if vaca:
-        from models.db import db
-        db.session.delete(vaca)
-        db.session.commit()
-        return jsonify({'message': f'Vaca "{nome}" deleted successfully'}), 200
-    else:
-        return jsonify({'error': 'Cow not found'}), 404
 

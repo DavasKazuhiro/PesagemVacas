@@ -2,7 +2,10 @@ from flask import Flask, Blueprint, render_template, request,redirect, url_for,j
 from flask_mqtt import Mqtt
 import json
 from models.db import db, instance
+
 from controllers.pesagem_controller import pesagem_, Pesagem
+from controllers.vaca_controller import vaca_, Vaca
+
 from datetime import datetime
 from models.iot.alerta_animal import Alerta
 from models.iot.vacas import Vaca
@@ -12,6 +15,7 @@ def create_app():
 
     # BLUEPRINTS
     app.register_blueprint(pesagem_, url_prefix='/')
+    app.register_blueprint(vaca_, url_prefix='/')
 
     # VARIÁVEIS GLOBAIS
     topic_subscribe1 = "exp.criativas/espparapc"
