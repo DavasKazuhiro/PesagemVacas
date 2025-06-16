@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from models.iot.usuario import Usuario
 from models.db import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 user_ = Blueprint("user_", __name__, template_folder="views")
 
@@ -26,11 +27,12 @@ def add_usuario():
     nome = data.get('nome')
     email = data.get('email')
     nivel_usuario = data.get('nivel_usuario')
+    senha = generate_password_hash(data.get('senha'))
 
-    if not (nome and email and nivel_usuario):
-        return jsonify({'error': 'Nome, email e nível de usuário são obrigatórios.'}), 400
+    if not (nome and email and nivel_usuario and senha):
+        return jsonify({'error': 'Nome, email, nível de usuário e senha são obrigatórios.'}), 400
 
-    usuario = Usuario(nome=nome, email=email, nivel_usuario=nivel_usuario)
+    usuario = Usuario(nome=nome, email=email, nivel_usuario=nivel_usuario, senha=senha)
     db.session.add(usuario)
     db.session.commit()
     return jsonify({'message': 'Usuário adicionado com sucesso.'}), 201
