@@ -88,6 +88,13 @@ def create_app():
 
         mqtt_client.publish(topic_subscribe2, json.dumps(mensagem))
         return redirect(url_for('tempo_real'))
+    
+    @app.route('/limpar_pesagens', methods=['GET','POST'])
+    def limpar_pesagens():
+        app.ids_vacas.clear()
+        app.pesagens.clear()
+        app.data_horas.clear()
+        return redirect(url_for('tempo_real'))
 
     # MÉTODOS MQTT
     @mqtt_client.on_connect()
