@@ -47,3 +47,4 @@ def delete_vaca():
         return jsonify({'message': f'Vaca "{vaca.nome}" removida com sucesso'}), 200
     else:
         return jsonify({'error': 'Vaca não encontrada'}), 404
+
